@@ -1,3 +1,4 @@
+import { ID } from "react-native-appwrite";
 import databaseService from "./databaseService";
 
 // AppWrite database and collection id
@@ -14,6 +15,45 @@ const noteService = {
         }
 
         return { data: response }
+    },
+
+    // Add new note   
+    async createNote(text) {
+
+        if (!text) {
+            return {
+                error: 'Note text cannot be empty'
+            }
+        }
+        const data = {
+            text: text,
+            createdAt: new Date().toISOString()
+        }
+        const response = await databaseService.createDocument(dbId, colId, data, ID.unique())
+        if (response?.error) {
+            return {
+                error: response.error
+            }
+        }
+        else {
+            return {
+                data: response
+            };
+        }
+    },
+
+    async deleteNote(noteId) {
+        const response = await databaseService.deleteDocument(dbId, colId, noteId);
+        if (response.error) {
+            return {
+                error: response.error
+            }
+        }
+        else {
+            return {
+                success: true
+            }
+        }
     }
 };
 

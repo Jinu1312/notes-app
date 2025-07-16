@@ -2,7 +2,7 @@ import AddNoteModel from "@/components/AddNoteModel";
 import NoteList from "@/components/NoteList";
 import noteService from "@/services/noteService";
 import { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const NotesScreen = () => {
 
@@ -32,21 +32,58 @@ const NotesScreen = () => {
         setLoading(false);
     }
 
-    const addNote = () => {
+    const addNote = async () => {
         if (newNote.trim() == '') return;
 
-        setNotes((prevNotes) => [
-            ...prevNotes,
-            { id: Date.now().toString(), text: newNote },
-        ]);
+        const response = await noteService.createNote(newNote);
+        if (response.error) {
+            Alert.alert('Error', response.error);
+        }
+        else {
+            setNotes([...notes, response.data]);
+        }
+
         setNewNote('');
         setModelVisible(false);
+    }
+
+    const deleteNote = async (id) => {
+        Alert.alert('Delete Note', 'Are yoiu sure you want to delete this note?', [
+            {
+                text: 'Cancel',
+                style: 'cancel'
+            },
+            {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: async () => {
+                    const response = await noteService.deleteNote(id);
+                    if (response.error) {
+                        Alert.alert('Error', response.error);
+                    }
+                    else {
+                        setNotes(notes.filter((note) => note.$id !== id));
+                    }
+                }
+            }
+        ])
     }
 
     return <View style={styles.container}>
 
         {/*Note List */}
-        <NoteList notes={notes} />
+        {
+            loading ?
+                (
+                    <ActivityIndicator size={'large'}
+                        color={'#007bff'} />
+                ) : (
+                    <>
+                        {error && <Text style={styles.errorText}>console.error(); </Text>}
+                        <NoteList notes={notes} onDelete={deleteNote} />
+                    </>
+                )
+        }
 
         <TouchableOpacity style={styles.addButton} onPress={() => {
             setModelVisible(true)
@@ -133,6 +170,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#fff'
     },
+    errorText: {
+        color: 'red',
+        textAlign: 'center',
+        marginBottom: 10,
+        fontSize: 16
+    }
 })
 
 export default NotesScreen;
