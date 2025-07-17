@@ -28,7 +28,7 @@ const AuthScreen = () => {
         if (isRegistering) {
             response = await register(email, password);
         } else {
-            respo = await login(email, password);
+            response = await login(email, password);
         }
 
         if (response.error) {
