@@ -1,5 +1,5 @@
 import { Platform } from "react-native";
-import { Client, Databases } from "react-native-appwrite";
+import { Account, Client, Databases } from "react-native-appwrite";
 
 const config = {
     endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT,
@@ -14,9 +14,9 @@ const client = new Client()
     .setEndpoint(config.endpoint)
     .setProject(config.projectId);
 
-    console.log("Appwrite Endpoint:", config.endpoint);
-    console.log("Appwrite Project ID:", config.projectId);
-    console.log("Platform:", Platform.OS.toString());
+console.log("Appwrite Endpoint:", config.endpoint);
+console.log("Appwrite Project ID:", config.projectId);
+console.log("Platform:", Platform.OS.toString());
 
 switch (Platform.OS) {
 
@@ -32,4 +32,8 @@ switch (Platform.OS) {
 
 const database = new Databases(client);
 
-export { client, config, database };
+const account = new Account(client);
+
+export { account, client, config, database };
+
+
