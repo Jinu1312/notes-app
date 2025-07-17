@@ -105,7 +105,7 @@ const NotesScreen = () => {
                         color={'#007bff'} />
                 ) : (
                     <>
-                        {error && <Text style={styles.errorText}>console.error(); </Text>}
+                        {error && <Text style={styles.errorText}>{error}</Text>}
                         <NoteList notes={notes} onDelete={deleteNote} onEdit={editNote} />
                     </>
                 )
