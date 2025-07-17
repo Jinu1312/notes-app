@@ -1,21 +1,37 @@
 import AddNoteModel from "@/components/AddNoteModel";
 import NoteList from "@/components/NoteList";
 import noteService from "@/services/noteService";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useAuth } from "../../contexts/AuthContext";
 
 const NotesScreen = () => {
 
-    const [notes, setNotes] = useState([]);
+    const router = useRouter();
+    const { user, loading: authLoading } = useAuth();
 
+    const [notes, setNotes] = useState([]);
     const [modelVisible, setModelVisible] = useState(false);
     const [newNote, setNewNote] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setEroor] = useState(null);
 
     useEffect(() => {
-        fetchNotes();
-    }, [])
+        if (!authLoading && !user) {
+            setLoading(false);
+            router.replace('/auth');
+        }
+    }, [user, authLoading]);
+
+    useEffect(() => {
+        if (user) {
+            fetchNotes();
+            return;
+        }
+        setLoading(false);
+        router.replace('/auth');
+    }, [user]);
 
     const fetchNotes = async () => {
         setLoading(true);
