@@ -31,7 +31,7 @@ const authService = {
     // Get loggedin user
     async getUser() {
         try {
-            return account.get();
+            return await account.get();
         } catch (error) {
             return {
                 error: error.message
